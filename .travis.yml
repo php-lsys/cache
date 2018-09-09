@@ -1,0 +1,11 @@
+language: php
+php:
+  - 7.1
+before_script:
+  - composer install
+  - cd tests
+script: 
+  - ../vendor/bin/phpunit -v
+after_script:
+  - cd ..
+  - travis_retry vendor/bin/php-coveralls -x tests/report/clover.xml -o tests/report/coveralls.json -v
