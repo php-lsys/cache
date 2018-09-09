@@ -1,0 +1,26 @@
+{
+	"name": "lsys/cache",
+	"type": "library",
+	"version" : "1.0.0",
+	"license": "Apache-2.0",
+	"description" : "lsys module cache",
+	"autoload":{
+		"psr-4": {
+        	"LSYS\\" : "src/classes/LSYS/"
+		},
+		"files": ["src/Bootstarp.php"]
+    },
+    "require": {
+     	"php": ">=5.5",
+     	"lsys/config":"~1.0.0"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~7.1.5",
+		"php-coveralls/php-coveralls":"~v2.0.0"
+	},
+	"suggest": {
+		"lsys/cache-memcache":"~1.0.0",
+     	"lsys/cache-memcached":"~1.0.0",
+     	"lsys/cache-redis":"~1.0.0"
+    }
+}
