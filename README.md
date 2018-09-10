@@ -1,8 +1,8 @@
 缓存层抽象封装
 ===
 
-[![Build Status](https://travis-ci.com/lsys/cache.svg?branch=master)](https://travis-ci.com/lsys/cache)
-[![Coverage Status](https://coveralls.io/repos/github/lsys/cache/badge.svg?branch=master)](https://coveralls.io/github/lsys/cache?branch=master)
+[![Build Status](https://travis-ci.com/php-lsys/cache.svg?branch=master)](https://travis-ci.com/php-lsys/cache)
+[![Coverage Status](https://coveralls.io/repos/github/php-lsys/cache/badge.svg?branch=master)](https://coveralls.io/github/lsys/cache?branch=master)
 
 > 封装此类库是为了让业务逻辑的KEY-VALUE操作脱离具体的某个缓存服务,如:redis或其他,提升代码兼容性
 
