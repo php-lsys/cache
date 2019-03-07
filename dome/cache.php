@@ -7,14 +7,14 @@ var_dump($cache->set("a1231231df1","b"));
 var_dump($cache->get("a1231231df"));
 var_dump($cache->exist("a1231231df"));
 var_dump($cache->delete("a1231231df"));
-var_dump($cache->delete_all());
+var_dump($cache->deleteAll());
 
 
 
-$cache->tag_set("test_a",'aaa', array("a","b"));
+$cache->tagSet("test_a",'aaa', array("a","b"));
 
-var_dump(in_array("aaa",$cache->tag_find("a")));
-var_dump($cache->tag_get("test_a"));
+var_dump(in_array("aaa",$cache->tagFind("a")));
+var_dump($cache->tagGet("test_a"));
 
 
 

@@ -21,7 +21,7 @@ final class CacheTest extends TestCase
         $this->assertTrue($cache->delete("a1231231df"));
         $this->assertFalse($cache->exist("a1231231df"));
         $this->assertTrue($cache->set("a1231231df","b"));
-        $cache->delete_all();
+        $cache->deleteAll();
         $this->assertFalse($cache->exist("a1231231df"));
     }
 }

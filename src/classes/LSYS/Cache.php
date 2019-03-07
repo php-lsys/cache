@@ -52,7 +52,7 @@ abstract class Cache {
 	 * @param mixed|callable $default
 	 * @return mixed
 	 */
-	protected function _get_callback_default($id,$default){
+	protected function _getCallbackDefault($id,$default){
 		if ($default instanceof SetCallback){
 		    $data=$default->data($id);
 		    $timeout=$default->timeout();
@@ -87,6 +87,6 @@ abstract class Cache {
 	/**
 	 *  Delete all cache entries.
 	 */
-	abstract public function delete_all();
+	abstract public function deleteAll();
 	
 }

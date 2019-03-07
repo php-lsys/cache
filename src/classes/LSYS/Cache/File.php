@@ -48,12 +48,12 @@ class File extends Cache {
 		// PHP < 5.3 exception handle
 		catch (\ErrorException $e)
 		{
-			$this->_cache_dir = $this->_make_directory($directory, 0777, TRUE);
+			$this->_cache_dir = $this->_makeDirectory($directory, 0777, TRUE);
 		}
 		// PHP >= 5.3 exception handle
 		catch (\UnexpectedValueException $e)
 		{
-			$this->_cache_dir = $this->_make_directory($directory, 0777, TRUE);
+			$this->_cache_dir = $this->_makeDirectory($directory, 0777, TRUE);
 		}
 	
 		// If the defined directory is a file, get outta here
@@ -85,8 +85,8 @@ class File extends Cache {
 	 */
 	public function get($id, $default = NULL)
 	{
-		$filename = self::filename($this->_sanitize_id($id));
-		$directory = $this->_resolve_directory($filename);
+		$filename = self::filename($this->_sanitizeId($id));
+		$directory = $this->_resolveDirectory($filename);
 	
 		// Wrap operations in try/catch to handle notices
 		try
@@ -98,7 +98,7 @@ class File extends Cache {
 			if ( ! $file->isFile())
 			{
 				// Return default value
-				return $this->_get_callback_default($id, $default);
+				return $this->_getCallbackDefault($id, $default);
 			}
 			else
 			{
@@ -124,8 +124,8 @@ class File extends Cache {
 				if (($created + (int) $lifetime) < time())
 				{
 					// Delete the file
-					$this->_delete_file($file, NULL, TRUE);
-					return $this->_get_callback_default($id, $default);
+					$this->_deleteFile($file, NULL, TRUE);
+					return $this->_getCallbackDefault($id, $default);
 				}
 				else
 				{
@@ -151,8 +151,8 @@ class File extends Cache {
 	 * @param string $id
 	 */
 	public function exist($id){
-		$filename = self::filename($this->_sanitize_id($id));
-		$directory = $this->_resolve_directory($filename);
+		$filename = self::filename($this->_sanitizeId($id));
+		$directory = $this->_resolveDirectory($filename);
 		try
 		{
 			$file = new \SplFileInfo($directory.$filename);
@@ -184,7 +184,7 @@ class File extends Cache {
 				if (($created + (int) $lifetime) < time())
 				{
 					// Delete the file
-					$this->_delete_file($file, NULL, TRUE);
+					$this->_deleteFile($file, NULL, TRUE);
 					return false;
 				}
 				else
@@ -208,8 +208,8 @@ class File extends Cache {
 	 */
 	public function set($id, $data, $lifetime = NULL)
 	{
-		$filename = self::filename($this->_sanitize_id($id));
-		$directory = $this->_resolve_directory($filename);
+		$filename = self::filename($this->_sanitizeId($id));
+		$directory = $this->_resolveDirectory($filename);
 	
 		// If lifetime is NULL
 		if ($lifetime === NULL)
@@ -266,10 +266,10 @@ class File extends Cache {
 	 */
 	public function delete($id)
 	{
-		$filename = self::filename($this->_sanitize_id($id));
-		$directory = $this->_resolve_directory($filename);
+		$filename = self::filename($this->_sanitizeId($id));
+		$directory = $this->_resolveDirectory($filename);
 	
-		return $this->_delete_file(new \SplFileInfo($directory.$filename), NULL, TRUE);
+		return $this->_deleteFile(new \SplFileInfo($directory.$filename), NULL, TRUE);
 	}
 	
 	/**
@@ -280,9 +280,9 @@ class File extends Cache {
 	 * entry within the system for all clients.
 	 * @return  boolean
 	 */
-	public function delete_all()
+	public function deleteAll()
 	{
-		return $this->_delete_file($this->_cache_dir, TRUE);
+		return $this->_deleteFile($this->_cache_dir, TRUE);
 	}
 	
 	/**
@@ -291,9 +291,9 @@ class File extends Cache {
 	 *
 	 * @return  void
 	 */
-	public function garbage_collect()
+	public function garbageCollect()
 	{
-		$this->_delete_file($this->_cache_dir, TRUE, FALSE, TRUE);
+		$this->_deleteFile($this->_cache_dir, TRUE, FALSE, TRUE);
 		return;
 	}
 	
@@ -301,7 +301,7 @@ class File extends Cache {
 	 * Deletes files recursively and returns FALSE on any errors
 	 *
 	 *     // Delete a file or folder whilst retaining parent directory and ignore all errors
-	 *     $this->_delete_file($folder, TRUE, TRUE);
+	 *     $this->_deleteFile($folder, TRUE, TRUE);
 	 *
 	 * @param   \SplFileInfo  $file                     file
 	 * @param   boolean      $retain_parent_directory  retain the parent directory
@@ -310,7 +310,7 @@ class File extends Cache {
 	 * @return  boolean
 	 * @throws  Exception
 	 */
-	protected function _delete_file(\SplFileInfo $file, $retain_parent_directory = FALSE, $ignore_errors = FALSE, $only_expired = FALSE)
+	protected function _deleteFile(\SplFileInfo $file, $retain_parent_directory = FALSE, $ignore_errors = FALSE, $only_expired = FALSE)
 	{
 		// Allow graceful error handling
 		try
@@ -373,7 +373,7 @@ class File extends Cache {
 						// Create new file resource
 						$fp = new \SplFileInfo($files->getRealPath());
 						// Delete the file
-						$this->_delete_file($fp);
+						$this->_deleteFile($fp);
 					}
 	
 					// Move the file pointer on
@@ -429,12 +429,12 @@ class File extends Cache {
 	 * Resolves the cache directory real path from the filename
 	 *
 	 *      // Get the realpath of the cache folder
-	 *      $realpath = $this->_resolve_directory($filename);
+	 *      $realpath = $this->_resolveDirectory($filename);
 	 *
 	 * @param   string  $filename  filename to resolve
 	 * @return  string
 	 */
-	protected function _resolve_directory($filename)
+	protected function _resolveDirectory($filename)
 	{
 		return $this->_cache_dir->getRealPath().DIRECTORY_SEPARATOR.$filename[0].$filename[1].DIRECTORY_SEPARATOR;
 	}
@@ -451,7 +451,7 @@ class File extends Cache {
 	 * @return  \SplFileInfo
 	 * @throws  Exception
 	 */
-	protected function _make_directory($directory, $mode = 0777, $recursive = FALSE, $context = NULL)
+	protected function _makeDirectory($directory, $mode = 0777, $recursive = FALSE, $context = NULL)
 	{
 		if ( ! mkdir($directory, $mode, $recursive, $context))
 		{
@@ -465,12 +465,12 @@ class File extends Cache {
 	 * Replaces troublesome characters with underscores.
 	 *
 	 *     // Sanitize a cache id
-	 *     $id = $this->_sanitize_id($id);
+	 *     $id = $this->_sanitizeId($id);
 	 *
 	 * @param   string  $id  id of cache to sanitize
 	 * @return  string
 	 */
-	protected function _sanitize_id($id)
+	protected function _sanitizeId($id)
 	{
 		// Change slashes and spaces to underscores
 		return str_replace(array('/', '\\', ' '), '_', $id);
