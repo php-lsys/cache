@@ -8,9 +8,9 @@
 
 > 默认使用文件缓存,已实现以下包,根据实际情况使用
 
-	"lsys/cache-memcache":"~1.0.0"
-	"lsys/cache-memcached":"~1.0.0"
-	"lsys/cache-redis":"~1.0.0"
+	"lsys/cache-memcache":"~2.0.0"
+	"lsys/cache-memcached":"~2.0.0"
+	"lsys/cache-redis":"~2.0.0"
 
 使用示例:
 ```
