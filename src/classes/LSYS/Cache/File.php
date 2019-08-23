@@ -59,19 +59,19 @@ class File extends Cache {
 		// If the defined directory is a file, get outta here
 		if ($this->_cache_dir->isFile())
 		{
-			throw new Exception(__('Unable to create cache directory as a file already exists :path',array('path'=>$directory)));
+			throw new Exception(__('Unable to create cache directory as a file already exists :path',array(':path'=>$directory)));
 		}
 	
 		// Check the read status of the directory
 		if ( ! $this->_cache_dir->isReadable())
 		{
-			throw new Exception(__('Unable to read from the cache directory :path',array('path'=>$directory)));
+			throw new Exception(__('Unable to read from the cache directory :path',array(':path'=>$directory)));
 		}
 	
 		// Check the write status of the directory
 		if ( ! $this->_cache_dir->isWritable())
 		{
-			throw new Exception(__('Unable to write to the cache directory :path',array('path'=>$directory)));
+			throw new Exception(__('Unable to write to the cache directory :path',array(':path'=>$directory)));
 		}
 	}
 	
@@ -139,7 +139,7 @@ class File extends Cache {
 			// Handle ErrorException caused by failed unserialization
 			if ($e->getCode() === E_NOTICE)
 			{
-				throw new Exception(__('failed to unserialize cached object with message : :message',array("message"=>$e->getMessage())));
+				throw new Exception(__('failed to unserialize cached object with message : :message',array(":message"=>$e->getMessage())));
 			}
 	
 			// Otherwise throw the exception
@@ -227,7 +227,7 @@ class File extends Cache {
 			// Create the directory
 			if ( ! mkdir($directory, 0777, TRUE))
 			{
-				throw new Exception(__(':method unable to create directory :dir ',array("method"=>__METHOD__,'dir'=>$directory)));
+				throw new Exception(__(':method unable to create directory :dir ',array(":method"=>__METHOD__,':dir'=>$directory)));
 			}
 	
 			// chmod to solve potential umask issues
@@ -250,7 +250,7 @@ class File extends Cache {
 			if ($e->getCode() === E_NOTICE)
 			{
 				// Throw a caching error
-				throw new Exception(__(':method failed to serialize data for caching with message :msg ',array("method"=>__METHOD__,'msg'=>$e->getMessage())));
+				throw new Exception(__(':method failed to serialize data for caching with message :msg ',array(":method"=>__METHOD__,':msg'=>$e->getMessage())));
 			}
 	
 			// Else rethrow the error exception
@@ -351,7 +351,7 @@ class File extends Cache {
 					// Catch any delete file warnings
 					if ($e->getCode() === E_WARNING)
 					{
-						throw new Exception(__(':method failed to delete file :path',array('method'=>__METHOD__,'path'=>$file->getRealPath())));
+						throw new Exception(__(':method failed to delete file :path',array(':method'=>__METHOD__,':path'=>$file->getRealPath())));
 					}
 				}
 			}
@@ -400,7 +400,7 @@ class File extends Cache {
 					// Catch any delete directory warnings
 					if ($e->getCode() === E_WARNING)
 					{
-						throw new Exception(__(':method failed to delete directory :path',array('method'=>__METHOD__,'path'=>$file->getRealPath())));
+						throw new Exception(__(':method failed to delete directory :path',array(':method'=>__METHOD__,':path'=>$file->getRealPath())));
 					}
 					throw new Exception($e->getMessage(),$e->getCode(),$e);
 				}
@@ -455,7 +455,7 @@ class File extends Cache {
 	{
 		if ( ! mkdir($directory, $mode, $recursive, $context))
 		{
-			throw new Exception(__('Failed to create the defined cache directory : :dir',array("dir"=>$directory)));
+			throw new Exception(__('Failed to create the defined cache directory : :dir',array(":dir"=>$directory)));
 		}
 		chmod($directory, $mode);
 	

@@ -18,7 +18,7 @@ abstract class Cache {
 	    $name=$config->name();
 		$driver=$config->get("driver",NULL);
 		if (!class_exists($driver,true)||!in_array(__CLASS__,class_parents($driver))){
-			throw new Exception( __('cache driver not defined in [:name on :driver] configuration',array("name"=>$name,"driver"=>$driver)));
+			throw new Exception( __('cache driver not defined in [:name on :driver] configuration',array(":name"=>$name,":driver"=>$driver)));
 		}
 		return  new $driver ( $config );
 	}
