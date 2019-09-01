@@ -7,6 +7,7 @@
 		"psr-4": {
         	"LSYS\\" : [
 				"src/common/classes/LSYS/",
+				"src/driver-file/classes/LSYS/",
 				"src/driver-memcache/classes/LSYS/",
 				"src/driver-memcached/classes/LSYS/",
 				"src/driver-redis/classes/LSYS/"
