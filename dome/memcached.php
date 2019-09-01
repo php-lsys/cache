@@ -1,7 +1,7 @@
 <?php
 include __DIR__."/Bootstarp.php";
 //$cache=LSYS\Cache\DI::get()->cache();
-$cache=\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.file"));
+$cache=\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.memcached"));
 var_dump($cache->set("a1231231df","b"));
 var_dump($cache->set("a1231231df1","b"));
 var_dump($cache->get("a1231231df"));
