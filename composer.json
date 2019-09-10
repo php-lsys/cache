@@ -13,7 +13,7 @@
 				"src/driver-redis/classes/LSYS/"
 			]
 		},
-		"files": ["src/common/Bootstarp.php"]
+		"files": ["src/common/Bootstarp.php","src/driver-file/Bootstarp.php"]
     },
     "require": {
      	"lsys/config":"~2.1.0"
