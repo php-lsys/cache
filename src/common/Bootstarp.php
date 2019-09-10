@@ -12,8 +12,3 @@ namespace LSYS\Cache{
 		return $i18n->__($string,  $values , $domain );
 	}
 }
-namespace{
-	LSYS\Config\File::dirs(array(
-		__DIR__."/config",
-	));	
-}
