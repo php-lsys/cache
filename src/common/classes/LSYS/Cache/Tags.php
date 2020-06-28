@@ -11,20 +11,22 @@ interface Tags {
 	 * Set a value to cache with tag,id and lifetime
 	 * @param string $tag
 	 */
-	 public function tagSet($id, $data,array $tags,$lifetime = 3600);
+    public function tagSet(string $id, $data,array $tags,?int $lifetime = NULL):bool;
 	/**
 	 * Retrieve a cached value entry by id.
 	 * @param string $tag
+	 * @return mixed
 	 */
-	 public function tagGet($id,$default);
+    public function tagGet(string $id,$default=null);
 	/**
 	 * Retrieve a cached value entry by tag.
 	 * @param string $tag
+	 * @return mixed
 	 */
-	 public function tagFind($tag);
+    public function tagFind(string $tag);
 	/**
 	 * Delete a cache entry based on tag
 	 * @param string $tag
 	 */
-	 public function tagDelete($tag);
+    public function tagDelete(string $tag):bool;
 }

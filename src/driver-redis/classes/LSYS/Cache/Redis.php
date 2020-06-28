@@ -9,7 +9,6 @@ namespace LSYS\Cache;
 use LSYS\Cache;
 use LSYS\Config;
 class Redis extends Cache implements Arithmetic,Tags {
-	const CACHE_CEILING = 2592000;
 	/**
 	 * @var string
 	 */
@@ -34,66 +33,76 @@ class Redis extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::get()
 	 */
-	public function get($id, $default = NULL)
+	public function get(string $id, $default = NULL)
 	{
 	    $redis=$this->_redis->configConnect();
-		if (!$redis->exists($id))return $this->_getCallbackDefault($id, $default);
+	    if (!$redis->exists($id))return $this->_getDefault($id, $default);
 		return $redis->get($id);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::set()
 	 */
-	public function set($id,$data,$lifetime = 3600)
+	public function set(string $id,$data,?int $lifetime = NULL):bool
 	{
+	    // If lifetime is NULL
+	    if ($lifetime === NULL)
+	    {
+	        // Set to the default expiry
+	        $lifetime = $this->_config->get("default_expire",3600);
+	    }
 	    $redis=$this->_redis->configConnect();
 		if (is_array($data)||is_object($data))$data=serialize($data);
-		return $redis->setex($id,$lifetime,$data);
+		$resut=$redis->setex($id,$lifetime,$data);
+		return boolval($resut);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::delete()
 	 */
-	public function delete($id)
+	public function delete(string $id):bool
 	{
 	    $redis=$this->_redis->configConnect();
-		$redis->del($id);
-		return true;
+		$resut=$redis->del($id);
+		return boolval($resut);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::deleteAll()
 	 */
-	public function deleteAll()
+	public function deleteAll():bool
 	{
 	    $redis=$this->_redis->configConnect();
 		$redis->flushDb();
+		return true;
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache\Arithmetic::increment()
 	 */
-	public function increment($id, $step = 1)
+	public function increment(string $id,int $step = 1):bool
 	{
 	    $redis=$this->_redis->configConnect();
-		if ($step==1) return $redis->incr($id);
-		else  return $redis->incrBy($id, $step);
+	    if ($step==1) $resut= $redis->incr($id);
+		else  $resut= $redis->incrBy($id, $step);
+		return boolval($resut);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache\Arithmetic::decrement()
 	 */
-	public function decrement($id, $step = 1)
+	public function decrement(string $id,int $step = 1):bool
 	{
 	    $redis=$this->_redis->configConnect();
-		if ($step==1) return $redis->decr($id);
-		else  return $redis->decrBy($id, $step);
+	    if ($step==1) $resut= $redis->decr($id);
+		else  $resut= $redis->decrBy($id, $step);
+		return boolval($resut);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::exist()
 	 */
-	public function exist($id){
+	public function exist(string $id):bool{
 	    $redis=$this->_redis->configConnect();
 		return !!$redis->exists($id);
 	}
@@ -101,8 +110,14 @@ class Redis extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagSet()
 	 */
-	public function tagSet($id, $data,array $tags,$lifetime = 3600)
+	public function tagSet(string $id, $data,array $tags,?int $lifetime = NULL):bool
 	{
+	    // If lifetime is NULL
+	    if ($lifetime === NULL)
+	    {
+	        // Set to the default expiry
+	        $lifetime = $this->_config->get("default_expire",3600);
+	    }
 	    $redis=$this->_redis->configConnect();
 		$s=$redis->hmset($id,array(
 			'v'=>$data,
@@ -118,20 +133,20 @@ class Redis extends Cache implements Arithmetic,Tags {
 			if ($ttl>0&&$ttl<$lifetime)$redis->expire($_tag,$lifetime);
 		}
 		if (is_array($data)||is_object($data))$data=serialize($data);
-		$redis->expire($id,$lifetime);
-		return true;
+		$resut=$redis->expire($id,$lifetime);
+		return boolval($resut);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagGet($id, $default = NULL)
+	public function tagGet(string $id, $default = NULL)
 	{
 	    $redis=$this->_redis->configConnect();
 		$data=$redis->hMget($id,array('v','t'));
 		if (!isset($data['v'])||!isset($data['t'])){
 			$redis->hDel($id,'v','t');
-			return $default;
+			return $this->_getDefault($id, $default);
 		}
 		$tags=unserialize($data['t']);
 		$val=$data['v'];
@@ -141,15 +156,10 @@ class Redis extends Cache implements Arithmetic,Tags {
 				$tagval=$redis->sMembers($tag_prefix.$v);
 				if(!in_array($id,$tagval)){
 					$redis->hDel($id,'v','t');
-					$val=$default;
+					$val=$this->_getDefault($id, $default);
 					break;
 				}
 			}
-		}
-		// If the value wasn't found, normalise it
-		if ($val === FALSE)
-		{
-			$val = (NULL === $default) ? NULL : $default;
 		}
 		// Return the value
 		return $val;
@@ -158,7 +168,7 @@ class Redis extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagFind($tag){
+	public function tagFind(string $tag){
 	    $redis=$this->_redis->configConnect();
 		$tag_prefix=self::$tag_prefix;
 		$tagval=$redis->sMembers($tag_prefix.$tag);
@@ -178,7 +188,7 @@ class Redis extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagDelete()
 	 */
-	public function tagDelete($tag){
+	public function tagDelete(string $tag):bool{
 	    $redis=$this->_redis->configConnect();
 		$tag_prefix=self::$tag_prefix;
 		$_tag=$tag_prefix.$tag;

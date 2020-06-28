@@ -7,9 +7,8 @@
  */
 namespace LSYS;
 use function LSYS\Cache\__;
-use LSYS\Cache\SetCallback;
+use LSYS\Cache\SetDefault;
 abstract class Cache {
-	public static $expire=3600;
 	/**
 	 * @param string $name
 	 * @return Cache
@@ -52,41 +51,44 @@ abstract class Cache {
 	 * @param mixed|callable $default
 	 * @return mixed
 	 */
-	protected function _getCallbackDefault($id,$default){
-		if ($default instanceof SetCallback){
-		    $data=$default->data($id);
-		    $timeout=$default->timeout();
-		    if($timeout===null||is_int($timeout)) $this->set($id,$data,$default->timeout());
-			return $data;
-		}
-		return $default;
+	protected function _getDefault(string $id,$default){
+	    if (!is_callable($default)) return $default;
+	    $data=call_user_func($default,$id);
+	    if ($data instanceof SetDefault) {
+	        $timeout=$data->timeout();
+	        $data=$data->data();
+	        if ($data->isCache())$this->set($id,$data,$timeout);
+	    }
+		return $data;
 	}
 	/**
 	 * Retrieve a cached value entry by id.
+	 * $default is callable return SetDefault set default data to cache
 	 * @param string $id
-	 * @param mixed|SetCallback $default
+	 * @param mixed|callable $default 
+	 * @return mixed
 	 */
-	abstract public function get($id, $default = NULL);
+	abstract public function get(string $id, $default = NULL);
 	/**
 	 * Set a value to cache with id and lifetime
 	 * @param string $id
 	 * @param mixed $data
 	 * @param number $lifetime
 	 */
-	abstract public function set($id, $data,$lifetime = 3600);
+	abstract public function set(string $id, $data,?int $lifetime = NULL):bool;
 	/**
 	 * check id in cache?
 	 * @param string $id
 	 */
-	abstract public function exist($id);
+	abstract public function exist(string $id):bool;
 	/**
 	 * Delete a cache entry based on id
 	 * @param string $id
 	 */
-	abstract public function delete($id);
+	abstract public function delete(string $id):bool;
 	/**
 	 *  Delete all cache entries.
 	 */
-	abstract public function deleteAll();
+	abstract public function deleteAll():bool;
 	
 }

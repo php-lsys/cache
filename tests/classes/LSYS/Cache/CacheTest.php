@@ -14,9 +14,9 @@ final class CacheTest extends TestCase
         $this->assertTrue($cache->set("a1231231df","b"));
         $this->assertEquals($cache->get("a1231231df"),"b");
         $this->assertEquals($cache->get("a1231231dffasdf".uniqid(),"b"),"b");
-        $this->assertEquals($cache->get("a1231231dffasdf".uniqid(),new SetCallback(function(){
-            return "b";
-        })),"b");
+        $this->assertEquals($cache->get("a1231231dffasdf".uniqid(),function(){
+            return new SetDefault("data",true,1000);
+        }));
         $this->assertTrue($cache->exist("a1231231df"));
         $this->assertTrue($cache->delete("a1231231df"));
         $this->assertFalse($cache->exist("a1231231df"));

@@ -44,14 +44,14 @@ class Memcache extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::get()
 	 */
-	public function get($id, $default = NULL)
+	public function get(string $id, $default = NULL)
 	{
 	    $memcache=$this->_memcache->configServers();
 		$val=$memcache->get($id);
 		// If the value wasn't found, normalise it
 		if ($val === FALSE)
 		{
-			$val=$this->_getCallbackDefault($id, $default);
+		    $val=$this->_getDefault($id, $default);
 			$val = (NULL === $val) ? NULL : $val;
 		}
 		// Return the value
@@ -62,8 +62,14 @@ class Memcache extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::set()
 	 */
-	public function set($id, $data,$lifetime = 3600)
+	public function set(string $id, $data,?int $lifetime = null):bool
 	{
+	    // If lifetime is NULL
+	    if ($lifetime === NULL)
+	    {
+	        // Set to the default expiry
+	        $lifetime = $this->_config->get("default_expire",3600);
+	    }
 	    $memcache=$this->_memcache->configServers();
 		// If the lifetime is greater than the ceiling
 		if ($lifetime > static::CACHE_CEILING)
@@ -82,51 +88,55 @@ class Memcache extends Cache implements Arithmetic,Tags {
 			// Normalise the lifetime
 			$lifetime = 0;
 		}
-		return $memcache->set($id,$data, $this->_flags, $lifetime);
+		$status=$memcache->set($id,$data, $this->_flags, $lifetime);
+		return boolval($status);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::delete()
 	 */
-	public function delete($id, $timeout = 0)
+	public function delete(string $id, $timeout = 0):bool
 	{
 	    $memcache=$this->_memcache->configServers();
 		// Delete the id
-		return $memcache->delete($id, $timeout);
+	    $status= $memcache->delete($id, $timeout);
+		return boolval($status);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::deleteAll()
 	 */
-	public function deleteAll()
+	public function deleteAll():bool
 	{
 	    $memcache=$this->_memcache->configServers();
 		$result = $memcache->flush();
-		return $result;
+		return boolval($result);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache\Arithmetic::increment()
 	 */
-	public function increment($id, $step = 1)
+	public function increment(string $id,int $step = 1):bool
 	{
 	    $memcache=$this->_memcache->configServers();
-		return $memcache->increment($id, $step);
+	    $result=$memcache->increment($id, $step);
+		return boolval($result);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache\Arithmetic::decrement()
 	 */
-	public function decrement($id, $step = 1)
+	public function decrement(string $id,int $step = 1):bool
 	{
 	    $memcache=$this->_memcache->configServers();
-		return $memcache->decrement($id, $step);
+	    $result=$memcache->decrement($id, $step);
+		return boolval($result);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::exist()
 	 */
-	public function exist($id){
+	public function exist(string $id):bool{
 	    $memcache=$this->_memcache->configServers();
 		return $memcache->get($id)!==false;
 	}
@@ -134,9 +144,15 @@ class Memcache extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagSet()
 	 */
-	public function tagSet($id, $data,array $tags,$lifetime = 3600)
+	public function tagSet(string $id, $data,array $tags,?int $lifetime = NULL):bool
 	{
 	    $memcache=$this->_memcache->configServers();
+	    // If lifetime is NULL
+	    if ($lifetime === NULL)
+	    {
+	        // Set to the default expiry
+	        $lifetime = $this->_config->get("default_expire",3600);
+	    }
 		// If the lifetime is greater than the ceiling
 		if ($lifetime > static::CACHE_CEILING)
 		{
@@ -168,38 +184,33 @@ class Memcache extends Cache implements Arithmetic,Tags {
 			$tagval=array_flip(array_flip($tagval));
 			$memcache->set($tag_prefix.$v,$tagval,$this->_flags, $ttime);
 		}
-		return $memcache->set($id,$cval, $this->_flags, $lifetime);
+		$status=$memcache->set($id,$cval, $this->_flags, $lifetime);
+		return boolval($status);
 	}
 	/**
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagGet($id, $default = NULL)
+	public function tagGet(string $id, $default = NULL)
 	{
 	    $memcache=$this->_memcache->configServers();
 		$val=$memcache->get($id);
-		if(!is_array($val)||!isset($val[0])||!isset($val[1])) $val=$default;
+		if(!is_array($val)||!isset($val[0])||!isset($val[1])) $val=$this->_getDefault($id, $default);
 		else{
 			list($val,$tags)=$val;
 			if(!is_array($tags)){
-				$val=$default;
+			    $val=$this->_getDefault($id, $default);
 			}else if(count($tags)>0){
 				$tag_prefix=self::$tag_prefix;
 				foreach($tags as $v){
 					$tagval=$memcache->get($tag_prefix.$v);
 					if(!is_array($tagval)||!in_array($id,$tagval)){
 						$memcache->delete($id);
-						$val=$default;
+						$val=$this->_getDefault($id, $default);
 						break;
 					}
 				}
-			}else $val=$default;
-		}
-	
-		// If the value wasn't found, normalise it
-		if ($val === FALSE)
-		{
-			$val = (NULL === $default) ? NULL : $default;
+			}else $val=$this->_getDefault($id, $default);
 		}
 		// Return the value
 		return $val;
@@ -208,7 +219,7 @@ class Memcache extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagFind($tag){
+	public function tagFind(string $tag){
 	    $memcache=$this->_memcache->configServers();
 		$tag_prefix=self::$tag_prefix;
 		$tagval=$memcache->get($tag_prefix.$tag);
@@ -225,7 +236,7 @@ class Memcache extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagDelete()
 	 */
-	public function tagDelete($tag){
+	public function tagDelete(string $tag):bool{
 	    $memcache=$this->_memcache->configServers();
 		$tag_prefix=self::$tag_prefix;
 		$tagval=$memcache->get($tag_prefix.$tag);

@@ -18,7 +18,7 @@ interface Arithmetic {
 	 * @return  integer
 	 * @return  boolean
 	 */
-	public function increment($id, $step = 1);
+    public function increment(string $id, int $step = 1):bool;
 	
 	/**
 	 * Decrements a given value by the step value supplied.
@@ -30,5 +30,5 @@ interface Arithmetic {
 	 * @return  integer
 	 * @return  boolean
 	*/
-	public function decrement($id, $step = 1);
+    public function decrement(string $id,int $step = 1):bool;
 }

@@ -20,7 +20,7 @@ class File extends Cache {
 	 * @param   string  $string  string to hash into filename
 	 * @return  string
 	 */
-	protected static function filename($string)
+	protected static function filename(string $string)
 	{
 		return sha1($string).'.cache';
 	}
@@ -84,7 +84,7 @@ class File extends Cache {
 	 * @return  mixed
 	 * @throws  Exception
 	 */
-	public function get($id, $default = NULL)
+	public function get(string $id, $default = NULL)
 	{
 		$filename = self::filename($this->_sanitizeId($id));
 		$directory = $this->_resolveDirectory($filename);
@@ -99,7 +99,7 @@ class File extends Cache {
 			if ( ! $file->isFile())
 			{
 				// Return default value
-				return $this->_getCallbackDefault($id, $default);
+			    return $this->_getDefault($id, $default);
 			}
 			else
 			{
@@ -126,7 +126,7 @@ class File extends Cache {
 				{
 					// Delete the file
 					$this->_deleteFile($file, NULL, TRUE);
-					return $this->_getCallbackDefault($id, $default);
+					return $this->_getDefault($id, $default);
 				}
 				else
 				{
@@ -151,7 +151,7 @@ class File extends Cache {
 	 * check id in cache?
 	 * @param string $id
 	 */
-	public function exist($id){
+	public function exist(string $id):bool{
 		$filename = self::filename($this->_sanitizeId($id));
 		$directory = $this->_resolveDirectory($filename);
 		try
@@ -207,7 +207,7 @@ class File extends Cache {
 	 * @param   integer  $lifetime  lifetime in seconds
 	 * @return  boolean
 	 */
-	public function set($id, $data, $lifetime = NULL)
+	public function set(string $id, $data,?int $lifetime = NULL):bool
 	{
 		$filename = self::filename($this->_sanitizeId($id));
 		$directory = $this->_resolveDirectory($filename);
@@ -216,7 +216,7 @@ class File extends Cache {
 		if ($lifetime === NULL)
 		{
 			// Set to the default expiry
-			$lifetime = $this->_config->get("default_expire",Cache::$expire);
+			$lifetime = $this->_config->get("default_expire",3600);
 		}
 	
 		// Open directory
@@ -265,7 +265,7 @@ class File extends Cache {
 	 * @param   string   $id  id to remove from cache
 	 * @return  boolean
 	 */
-	public function delete($id)
+	public function delete(string $id):bool
 	{
 		$filename = self::filename($this->_sanitizeId($id));
 		$directory = $this->_resolveDirectory($filename);
@@ -281,7 +281,7 @@ class File extends Cache {
 	 * entry within the system for all clients.
 	 * @return  boolean
 	 */
-	public function deleteAll()
+	public function deleteAll():bool
 	{
 		return $this->_deleteFile($this->_cache_dir, TRUE);
 	}
@@ -311,7 +311,7 @@ class File extends Cache {
 	 * @return  boolean
 	 * @throws  Exception
 	 */
-	protected function _deleteFile(\SplFileInfo $file, $retain_parent_directory = FALSE, $ignore_errors = FALSE, $only_expired = FALSE)
+	protected function _deleteFile(\SplFileInfo $file,bool $retain_parent_directory = FALSE,bool $ignore_errors = FALSE,bool $only_expired = FALSE)
 	{
 		// Allow graceful error handling
 		try
@@ -471,7 +471,7 @@ class File extends Cache {
 	 * @param   string  $id  id of cache to sanitize
 	 * @return  string
 	 */
-	protected function _sanitizeId($id)
+	protected function _sanitizeId(string $id)
 	{
 		// Change slashes and spaces to underscores
 		return str_replace(array('/', '\\', ' '), '_', $id);
