@@ -311,7 +311,7 @@ class File extends Cache {
 	 * @return  boolean
 	 * @throws  Exception
 	 */
-	protected function _deleteFile(\SplFileInfo $file,bool $retain_parent_directory = FALSE,bool $ignore_errors = FALSE,bool $only_expired = FALSE)
+	protected function _deleteFile(\SplFileInfo $file,$retain_parent_directory = FALSE,bool $ignore_errors = FALSE,bool $only_expired = FALSE)
 	{
 		// Allow graceful error handling
 		try

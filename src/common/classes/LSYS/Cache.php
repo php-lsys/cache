@@ -55,9 +55,10 @@ abstract class Cache {
 	    if (!is_callable($default)) return $default;
 	    $data=call_user_func($default,$id);
 	    if ($data instanceof SetDefault) {
+	        $tmpdata=$data->data();
 	        $timeout=$data->timeout();
-	        $data=$data->data();
 	        if ($data->isCache())$this->set($id,$data,$timeout);
+	        $data=$tmpdata;
 	    }
 		return $data;
 	}

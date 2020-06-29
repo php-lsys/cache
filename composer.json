@@ -19,6 +19,9 @@
      	"lsys/config":"~0.0.1"
 	},
 	"require-dev" : {
+		"lsys/memcache":"~0.0.1",
+     	"lsys/memcached":"~0.0.1",
+     	"lsys/redis":"~0.0.1",
 		"phpunit/phpunit" : "~7.1.5",
 		"php-coveralls/php-coveralls":"~v2.0.0"
 	},
