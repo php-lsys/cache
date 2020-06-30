@@ -28,5 +28,21 @@ final class CacheTest extends TestCase
         $this->assertTrue($cache->set("a1231231df","b"));
         $cache->deleteAll();
         $this->assertFalse($cache->exist("a1231231df"));
+        
+        if ($cache instanceof Tags) {
+            $cache->tagSet("test_a",'aaa', array("a","b"));
+            $this->assertTrue(in_array("aaa",$cache->tagFind("a")));
+            $this->assertEquals($cache->tagGet("test_a"), 'aaa');
+            $cache->tagDelete('a');
+            $this->assertEmpty($cache->tagGet("test_a"));
+        }
+        
+        if ($cache instanceof Arithmetic) {
+            $eq1=$cache->increment("ttt");
+            $this->assertTrue($eq1==1);
+            $eq0=$cache->decrement('ttt');
+            $this->assertTrue($eq0==0);
+        }
+        
     }
 }

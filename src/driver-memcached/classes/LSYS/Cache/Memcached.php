@@ -210,7 +210,7 @@ class Memcached extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagFind(string $tag){
+	public function tagFind(string $tag):array{
 	    $memcache=$this->_memcache->configServers();
 		$tag_prefix=self::$tag_prefix;
 		$tagval=$memcache->get($tag_prefix.$tag);

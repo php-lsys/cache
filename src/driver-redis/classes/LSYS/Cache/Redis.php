@@ -168,7 +168,7 @@ class Redis extends Cache implements Arithmetic,Tags {
 	 * {@inheritDoc}
 	 * @see \LSYS\Cache::tagGet()
 	 */
-	public function tagFind(string $tag){
+	public function tagFind(string $tag):array{
 	    $redis=$this->_redis->configConnect();
 		$tag_prefix=self::$tag_prefix;
 		$tagval=$redis->sMembers($tag_prefix.$tag);

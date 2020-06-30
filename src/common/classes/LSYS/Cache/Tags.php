@@ -23,7 +23,7 @@ interface Tags {
 	 * @param string $tag
 	 * @return mixed
 	 */
-    public function tagFind(string $tag);
+    public function tagFind(string $tag):array;
 	/**
 	 * Delete a cache entry based on tag
 	 * @param string $tag
