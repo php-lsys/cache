@@ -11,8 +11,8 @@ final class CacheTest extends TestCase
     public function testCache(){
         $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.file")));
         $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.redis")));
-        $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.memcache")));
-        $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.memcached")));
+//        $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.memcache")));
+//        $this->runcachetest(\LSYS\Cache::factory(\LSYS\Config\DI::get()->config("cache.memcached")));
     }
     public function runcachetest($cache)
     {
